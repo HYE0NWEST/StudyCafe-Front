@@ -9,7 +9,7 @@ export default defineConfig({
   // 👇 여기가 수정된 핵심 부분!
   // 로컬 개발(development)일 땐 루트('/') 사용
   // 배포(production)일 땐 '/StudyCafe-Front/' (저장소 이름) 사용
-  base: process.env.NODE_ENV ===  '/',
+ base: '/',
 
   resolve: {
     alias: {
