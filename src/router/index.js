@@ -5,7 +5,7 @@ import DashboardView from '../views/DashboardView.vue'
 import SignupView from '../views/SignupView.vue'
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     { path: '/', component: HomeView },
     { path: '/dashboard', component: DashboardView }, // 2. 대시보드 경로 추가
