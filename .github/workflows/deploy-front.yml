@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x] # Vue 3는 Node 18 이상 권장
+        node-version: [20.x] 
 
     steps:
     # 1. 깃허브에 있는 코드를 리눅스(Ubuntu) 컴퓨터로 가져옴
