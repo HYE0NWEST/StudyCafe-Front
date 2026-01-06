@@ -1,0 +1,36 @@
+name: Frontend CI (Build Check)
+
+# 언제 실행될지 설정 (main 브랜치에 push되거나 pull_request가 오면 실행)
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x] # Vue 3는 Node 18 이상 권장
+
+    steps:
+    # 1. 깃허브에 있는 코드를 리눅스(Ubuntu) 컴퓨터로 가져옴
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 2. Node.js 설치
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    # 3. 라이브러리 설치 (npm install)
+    - name: Install dependencies
+      run: npm install
+
+    # 4. 빌드 테스트 (npm run build) -> 여기서 에러나면 빨간불 뜸!
+    - name: Run build
+      run: npm run build
