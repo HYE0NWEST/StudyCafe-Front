@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useReservationStore } from '@/stores/reservation';
 import { useAuthStore } from '@/stores/auth';
@@ -25,6 +25,12 @@ onMounted(() => {
 onUnmounted(() => {
     if (timer) clearInterval(timer);
 });
+
+// [구역별 데이터 나누기]
+// DB에서 받아온 100개 데이터를 번호대별로 잘라서 보여줍니다.
+const focusZoneSeats = computed(() => store.seats.filter(s => s.seatNumber >= 1 && s.seatNumber <= 30));
+const laptopZoneSeats = computed(() => store.seats.filter(s => s.seatNumber >= 31 && s.seatNumber <= 60));
+const loungeZoneSeats = computed(() => store.seats.filter(s => s.seatNumber >= 61 && s.seatNumber <= 100));
 
 const clickSeat = async (seat) => {
     if (seat.status === 'OCCUPIED') return alert("이미 이용 중인 좌석입니다.");
@@ -61,47 +67,71 @@ const getClass = (s) => {
 </script>
 
 <template>
-    <div class="seat-page">
-        <div class="nav-header">
-            <button class="icon-btn" @click="router.push('/dashboard')">✕</button>
-            <h3>좌석 선택</h3>
-            <div style="width: 30px;"></div>
+    <div class="page-container">
+        <div class="header-nav">
+            <button class="back-icon" @click="router.push('/dashboard')">◀ 나가기</button>
+            <h2>좌석 배치도</h2>
+            <div class="user-info">{{ auth.username }}님</div>
         </div>
 
-        <div class="legend-bar">
-            <div class="legend-item"><span class="dot free"></span>가능</div>
-            <div class="legend-item"><span class="dot occupied"></span>사용중</div>
-            <div class="legend-item"><span class="dot mine"></span>내선택</div>
+        <div class="legend">
+            <span><i class="dot free"></i>가능</span>
+            <span><i class="dot occupied"></i>이용중</span>
+            <span><i class="dot mine"></i>내선택</span>
         </div>
 
-        <div class="screen-area">SCREEN / ENTRANCE</div>
+        <div class="map-container">
 
-        <div class="seat-grid-wrapper">
-            <div class="seat-grid">
-                <div v-for="seat in store.seats" :key="seat.seatNumber" 
-                     class="seat-box" :class="getClass(seat)"
-                     @click="clickSeat(seat)">
-                    <span class="num">{{ seat.seatNumber }}</span>
+            <div class="room focus-room">
+                <div class="room-title">🤫 Focus Zone (집중실)</div>
+                <div class="grid-focus">
+                    <div v-for="seat in focusZoneSeats" :key="seat.seatNumber" class="seat-item square"
+                        :class="getClass(seat)" @click="clickSeat(seat)">
+                        {{ seat.seatNumber }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="hallway">
+                <div class="facility entrance">🚪 입구</div>
+                <div class="facility kiosk">🖥️ 키오스크</div>
+                <div class="facility coffee">☕ 카페테리아</div>
+                <div class="facility wc">🚻 화장실</div>
+            </div>
+
+            <div class="right-wing">
+                <div class="room laptop-room">
+                    <div class="room-title">💻 Laptop Zone</div>
+                    <div class="grid-laptop">
+                        <div v-for="seat in laptopZoneSeats" :key="seat.seatNumber" class="seat-item rect"
+                            :class="getClass(seat)" @click="clickSeat(seat)">
+                            {{ seat.seatNumber }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="room lounge-room">
+                    <div class="room-title">🛋️ Lounge</div>
+                    <div class="grid-lounge">
+                        <div v-for="seat in loungeZoneSeats" :key="seat.seatNumber" class="seat-item circle"
+                            :class="getClass(seat)" @click="clickSeat(seat)">
+                            {{ seat.seatNumber }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div v-if="showModal" class="modal-overlay">
             <div class="modal-card">
-                <div class="modal-header">
-                    <h4>예약 확정</h4>
-                    <p>{{ store.mySeat }}번 좌석을 선택하셨습니다.</p>
-                </div>
-                
-                <div class="time-selector">
-                    <label>이용 시간 선택</label>
-                    <div class="time-options">
-                        <button v-for="h in [1, 2, 4, 6]" :key="h"
-                                :class="{ active: selectedHours === h }"
-                                @click="selectedHours = h">
-                            {{ h }}시간
-                        </button>
-                    </div>
+                <h4>예약 확정</h4>
+                <p class="modal-desc">{{ store.mySeat }}번 좌석을 이용하시겠습니까?</p>
+
+                <div class="time-options">
+                    <button v-for="h in [1, 2, 4, 6]" :key="h" :class="{ active: selectedHours === h }"
+                        @click="selectedHours = h">
+                        {{ h }}시간
+                    </button>
                 </div>
 
                 <div class="modal-actions">
@@ -114,41 +144,45 @@ const getClass = (s) => {
 </template>
 
 <style scoped>
-.seat-page {
+.page-container {
     width: 100vw;
     height: 100vh;
-    background-color: white;
+    background-color: #f0f2f5;
     display: flex;
     flex-direction: column;
-    align-items: center;
     overflow: hidden;
 }
 
-.nav-header {
-    width: 100%;
+.header-nav {
+    background: white;
     padding: 15px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: white;
-    border-bottom: 1px solid #f0f0f0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    z-index: 10;
 }
 
-.icon-btn {
-    background: none;
+.back-icon {
     border: none;
-    font-size: 20px;
-    color: #333;
+    background: none;
+    font-size: 16px;
+    color: #555;
+    cursor: pointer;
 }
 
-.legend-bar {
+.user-info {
+    font-weight: bold;
+    color: #2C3E50;
+}
+
+.legend {
     display: flex;
-    gap: 20px;
-    padding: 15px;
-    background: #f9f9f9;
-    width: 100%;
     justify-content: center;
-    font-size: 13px;
+    gap: 15px;
+    padding: 10px;
+    background: #f9f9f9;
+    font-size: 12px;
     color: #666;
 }
 
@@ -160,110 +194,235 @@ const getClass = (s) => {
     margin-right: 5px;
 }
 
-.dot.free { background: #E0E0E0; border: 1px solid #ccc; }
-.dot.occupied { background: #E74C3C; }
-.dot.mine { background: #3498DB; }
-
-.screen-area {
-    width: 80%;
-    height: 30px;
-    background: #eee;
-    margin: 20px 0;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    color: #aaa;
-    letter-spacing: 2px;
+.dot.free {
+    background: white;
+    border: 1px solid #ccc;
 }
 
-.seat-grid-wrapper {
+.dot.occupied {
+    background: #E74C3C;
+}
+
+.dot.mine {
+    background: #3498DB;
+}
+
+/* 맵 컨테이너 (전체 배치도) */
+.map-container {
     flex: 1;
+    padding: 30px;
+    display: flex;
+    gap: 30px;
+    justify-content: center;
     overflow-y: auto;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 공통 룸 스타일 */
+.room {
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 15px;
     padding: 20px;
-    width: 100%;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.room-title {
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    background: white;
+    padding: 0 10px;
+    font-weight: bold;
+    color: #2C3E50;
+    font-size: 14px;
+}
+
+/* 1. Focus Zone (왼쪽) */
+.focus-room {
+    width: 300px;
     display: flex;
     justify-content: center;
 }
 
-.seat-grid {
+.grid-focus {
     display: grid;
-    grid-template-columns: repeat(6, 1fr); /* 모바일 기준 6열 */
-    gap: 12px;
-    max-width: 500px;
+    grid-template-columns: repeat(3, 1fr);
+    /* 3열 배열 */
+    gap: 15px;
 }
 
-.seat-box {
-    width: 50px;
+.seat-item.square {
+    width: 60px;
     height: 50px;
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 12px;
+    border-radius: 4px;
+    /* 각진 책상 느낌 */
+    border-top: 4px solid #ddd;
+    /* 책상 파티션 느낌 */
+}
+
+/* 2. 복도 (가운데) */
+.hallway {
+    width: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.facility {
+    padding: 10px;
+    background: #e0e0e0;
+    border-radius: 8px;
+    font-size: 12px;
+    text-align: center;
+    width: 100%;
+    color: #555;
+    font-weight: bold;
+}
+
+.facility.entrance {
+    background: #81C784;
+    color: white;
+    height: 60px;
+    line-height: 40px;
+}
+
+/* 3. 오른쪽 날개 (Laptop + Lounge) */
+.right-wing {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.laptop-room {
+    min-height: 200px;
+}
+
+.grid-laptop {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.seat-item.rect {
+    width: 50px;
+    height: 40px;
+    border-radius: 8px;
+}
+
+.lounge-room {
+    flex: 1;
+    background-color: #fcfcfc;
+    /* 약간 다른 바닥 색 */
+    border-style: dashed;
+}
+
+.grid-lounge {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+.seat-item.circle {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    /* 소파/원형 테이블 느낌 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* 공통 좌석 스타일 */
+.seat-item {
+    background: white;
+    border: 1px solid #ccc;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: bold;
     color: #555;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    transition: transform 0.1s;
+    transition: all 0.2s;
 }
 
-.seat-box:active { transform: scale(0.9); }
+.seat-item:hover {
+    transform: scale(1.05);
+    border-color: #3498DB;
+}
 
-.seat-box.occupied { background-color: #fceceb; color: #E74C3C; border-color: #E74C3C; opacity: 0.7;}
-.seat-box.locked { background-color: #fff8e1; border-color: #FFC107; }
-.seat-box.mine { background-color: #3498DB; color: white; border-color: #3498DB; box-shadow: 0 4px 10px rgba(52, 152, 219, 0.4); }
+.seat-item.occupied {
+    background: #E74C3C;
+    color: white;
+    border-color: #E74C3C;
+    opacity: 0.5;
+    pointer-events: none;
+}
 
-/* 모달 */
+.seat-item.mine {
+    background: #3498DB;
+    color: white;
+    border-color: #3498DB;
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+}
+
+.seat-item.locked {
+    background: #FFC107;
+    border-color: #FFC107;
+}
+
+/* 모달 스타일 (동일 유지) */
 .modal-overlay {
     position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
+    z-index: 100;
     display: flex;
     justify-content: center;
-    align-items: flex-end; /* 모바일에서는 아래에서 올라오는 느낌 */
-    z-index: 999;
+    align-items: center;
 }
 
 .modal-card {
     background: white;
-    width: 100%;
-    max-width: 500px;
-    border-radius: 20px 20px 0 0;
     padding: 30px;
-    animation: slideUp 0.3s ease-out;
+    border-radius: 20px;
+    width: 320px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
-@keyframes slideUp {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
+.modal-desc {
+    color: #666;
+    margin-bottom: 20px;
 }
-
-.modal-header h4 { margin: 0 0 5px; font-size: 20px; }
-.modal-header p { color: #888; margin-bottom: 25px; }
 
 .time-options {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin: 10px 0 30px;
+    display: flex;
+    gap: 5px;
+    margin-bottom: 20px;
 }
 
 .time-options button {
+    flex: 1;
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid #eee;
     background: white;
     border-radius: 8px;
-    color: #666;
+    cursor: pointer;
 }
 
 .time-options button.active {
-    border-color: var(--accent-color);
-    background-color: #E3F2FD;
-    color: var(--accent-color);
+    background: #E3F2FD;
+    color: #3498DB;
+    border-color: #3498DB;
     font-weight: bold;
 }
 
@@ -274,13 +433,46 @@ const getClass = (s) => {
 
 .modal-actions button {
     flex: 1;
-    padding: 15px;
-    border-radius: 12px;
+    padding: 12px;
     border: none;
+    border-radius: 8px;
     font-weight: bold;
-    font-size: 16px;
+    cursor: pointer;
 }
 
-.cancel-btn { background: #f0f0f0; color: #666; }
-.confirm-btn { background: var(--primary-color); color: white; }
+.cancel-btn {
+    background: #f5f5f5;
+    color: #666;
+}
+
+.confirm-btn {
+    background: #2C3E50;
+    color: white;
+}
+
+/* 반응형 (모바일 대응) */
+@media (max-width: 768px) {
+    .map-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .hallway {
+        flex-direction: row;
+        width: 100%;
+        height: auto;
+    }
+
+    .facility {
+        width: auto;
+        flex: 1;
+    }
+
+    .focus-room,
+    .laptop-room,
+    .lounge-room {
+        width: 100%;
+        max-width: 350px;
+    }
+}
 </style>
