@@ -9,7 +9,6 @@ const password = ref('');
 const email = ref('');
 const loading = ref(false);
 
-const loading = ref(false);
 
 const handleSignup = async () => {
     if(!username.value || !password.value) return alert("정보를 입력하세요");
