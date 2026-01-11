@@ -42,7 +42,18 @@ export const useReservationStore = defineStore('reservation', () => {
             mySeat.value = seatNumber;
             await fetchSeats();
             return true;
-        } catch { return false; }
+        } catch (e) {
+            let errorMsg = '좌석 선점에 실패했습니다.';
+            if (e.response?.data) {
+                if (typeof e.response.data === 'string') {
+                    errorMsg = e.response.data;
+                } else if (e.response.data.message) {
+                    errorMsg = e.response.data.message;
+                }
+            }
+            alert(errorMsg);
+            return false;
+        }
     };
 
     // 3. 선점 취소
@@ -69,12 +80,28 @@ export const useReservationStore = defineStore('reservation', () => {
                 seatNumber: mySeat.value,
                 hours
             });
-            alert(res.data);
+            // 응답이 문자열이거나 객체일 수 있으므로 처리
+            let message = res.data;
+            if (typeof res.data === 'object' && res.data.message) {
+                message = res.data.message;
+            }
+            alert(message || '예약이 확정되었습니다.');
             mySeat.value = null;
 
             await checkMyActiveSeat(); // [추가] 예약 성공했으니 내 좌석 정보 갱신
             return true;
-        } catch { return false; }
+        } catch (e) {
+            let errorMsg = '예약 확정에 실패했습니다.';
+            if (e.response?.data) {
+                if (typeof e.response.data === 'string') {
+                    errorMsg = e.response.data;
+                } else if (e.response.data.message) {
+                    errorMsg = e.response.data.message;
+                }
+            }
+            alert(errorMsg);
+            return false;
+        }
     };
 
     // 5. 이용 종료
@@ -87,16 +114,34 @@ export const useReservationStore = defineStore('reservation', () => {
         if (!window.confirm("정말 퇴실하시겠습니까?")) return;
 
         try {
-            await axios.post('/api/reservations/end-use', {
+            const res = await axios.post('/api/reservations/end-use', {
                 userId: auth.userId,
                 seatNumber: 0
             });
-            alert("이용이 종료되었습니다.");
+            
+            let message = "이용이 종료되었습니다.";
+            if (res.data) {
+                if (typeof res.data === 'string') {
+                    message = res.data;
+                } else if (res.data.message) {
+                    message = res.data.message;
+                }
+            }
+            alert(message);
 
             await fetchSeats();
             await checkMyActiveSeat(); // [추가] 퇴실했으니 내 좌석 정보 갱신(지우기)
             return true;
         } catch (e) {
+            let errorMsg = '퇴실 처리에 실패했습니다.';
+            if (e.response?.data) {
+                if (typeof e.response.data === 'string') {
+                    errorMsg = e.response.data;
+                } else if (e.response.data.message) {
+                    errorMsg = e.response.data.message;
+                }
+            }
+            alert(errorMsg);
             return false;
         }
     };

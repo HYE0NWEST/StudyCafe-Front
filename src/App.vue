@@ -7,14 +7,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
 
 :root {
-  --primary-color: #2C3E50; /* 딥 네이비 */
-  --accent-color: #3498DB;  /* 밝은 블루 */
-  --bg-color: #F0F2F5;      /* 연한 회색 배경 */
+  --primary-color: #1a1f2e; /* 딥 네이비 */
+  --accent-color: #4f46e5;  /* 인디고 블루 */
+  --accent-hover: #6366f1;
+  --bg-color: #f8fafc;      /* 연한 회색 배경 */
   --white: #FFFFFF;
-  --text-dark: #333333;
-  --text-light: #888888;
-  --success: #2ECC71;
-  --danger: #E74C3C;
+  --text-dark: #1e293b;
+  --text-light: #64748b;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --border-color: #e2e8f0;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
 * {

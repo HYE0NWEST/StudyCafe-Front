@@ -88,27 +88,41 @@ const handleLogout = () => {
 
 .top-bar {
     width: 100%;
-    height: 60px;
-    background-color: white;
+    height: 70px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    padding: 0 24px;
+    box-shadow: var(--shadow-md);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .top-bar h2 {
-    font-size: 18px;
-    color: var(--primary-color);
+    font-size: 20px;
+    color: white;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin: 0;
 }
 
 .logout-btn {
-    background: none;
-    border: 1px solid #ddd;
-    padding: 5px 15px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 8px 16px;
     border-radius: 20px;
-    font-size: 12px;
-    color: #666;
+    font-size: 13px;
+    color: white;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+.logout-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
 }
 
 .content-area {
@@ -122,12 +136,17 @@ const handleLogout = () => {
 }
 
 .welcome-msg h3 {
-    font-size: 24px;
-    margin-bottom: 5px;
+    font-size: 28px;
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: var(--text-dark);
 }
 
 .highlight {
-    color: var(--accent-color);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .welcome-msg p {
@@ -138,15 +157,34 @@ const handleLogout = () => {
 .status-card {
     background: white;
     border-radius: 20px;
-    padding: 25px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    padding: 30px;
+    box-shadow: var(--shadow-lg);
     margin-bottom: 30px;
-    border: 1px solid #eee;
-    transition: all 0.3s;
+    border: 2px solid var(--border-color);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.status-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--border-color);
+    transition: all 0.3s ease;
 }
 
 .status-card.active {
-    border-left: 5px solid var(--accent-color);
+    border-color: var(--accent-color);
+    box-shadow: var(--shadow-xl);
+}
+
+.status-card.active::before {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    width: 5px;
 }
 
 .card-header {
@@ -159,15 +197,18 @@ const handleLogout = () => {
 }
 
 .live-badge {
-    background: var(--accent-color);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 10px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
 }
 
 .live-badge.inactive {
-    background: #ccc;
+    background: #cbd5e1;
+    color: #64748b;
 }
 
 .card-body {
@@ -176,10 +217,14 @@ const handleLogout = () => {
 }
 
 .seat-number {
-    font-size: 56px;
+    font-size: 64px;
     font-weight: 800;
-    color: var(--primary-color);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     line-height: 1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .unit {
@@ -211,39 +256,73 @@ const handleLogout = () => {
 
 .action-item {
     background: white;
-    padding: 20px;
-    border-radius: 15px;
+    padding: 24px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     cursor: pointer;
-    border: 1px solid transparent;
-    transition: all 0.2s;
+    border: 2px solid var(--border-color);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.action-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.05), transparent);
+    transition: left 0.5s;
+}
+
+.action-item:hover::before {
+    left: 100%;
 }
 
 .action-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-color);
 }
 
 .action-item.primary {
-    border-color: #E3F2FD;
+    border-color: #e0e7ff;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
 }
 
 .action-item.danger {
-    background-color: #FFEBEE;
-    border-color: #FFCDD2;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(239, 68, 68, 0.02) 100%);
+    border-color: #fecaca;
+}
+
+.action-item.danger:hover {
+    border-color: var(--danger);
 }
 
 .icon {
     font-size: 32px;
     margin-right: 20px;
-    background: #f8f9fa;
-    width: 60px;
-    height: 60px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    width: 64px;
+    height: 64px;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 12px;
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.action-item:hover .icon {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: var(--shadow-md);
+}
+
+.action-item.danger .icon {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
 }
 
 .text h4 {

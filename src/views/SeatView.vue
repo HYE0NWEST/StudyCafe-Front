@@ -154,36 +154,58 @@ const getClass = (s) => {
 }
 
 .header-nav {
-    background: white;
-    padding: 15px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 16px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-md);
     z-index: 10;
+    position: sticky;
+    top: 0;
+}
+
+.header-nav h2 {
+    color: white;
+    font-weight: 700;
+    margin: 0;
+    font-size: 20px;
 }
 
 .back-icon {
     border: none;
-    background: none;
-    font-size: 16px;
-    color: #555;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    color: white;
     cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+.back-icon:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-2px);
 }
 
 .user-info {
-    font-weight: bold;
-    color: #2C3E50;
+    font-weight: 600;
+    color: white;
+    font-size: 15px;
 }
 
 .legend {
     display: flex;
     justify-content: center;
-    gap: 15px;
-    padding: 10px;
-    background: #f9f9f9;
-    font-size: 12px;
-    color: #666;
+    gap: 20px;
+    padding: 14px;
+    background: white;
+    font-size: 13px;
+    color: var(--text-dark);
+    box-shadow: var(--shadow-sm);
+    font-weight: 500;
 }
 
 .dot {
@@ -356,24 +378,37 @@ const getClass = (s) => {
 }
 
 .seat-item.occupied {
-    background: #E74C3C;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     color: white;
-    border-color: #E74C3C;
-    opacity: 0.5;
+    border-color: #ef4444;
+    opacity: 0.6;
     pointer-events: none;
+    box-shadow: var(--shadow-sm);
 }
 
 .seat-item.mine {
-    background: #3498DB;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    border-color: #3498DB;
+    border-color: #667eea;
     transform: scale(1.1);
-    box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.6);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.6);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(102, 126, 234, 0.8);
+    }
 }
 
 .seat-item.locked {
-    background: #FFC107;
-    border-color: #FFC107;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    border-color: #f59e0b;
+    color: white;
+    box-shadow: var(--shadow-sm);
 }
 
 /* 모달 스타일 (동일 유지) */
@@ -392,16 +427,39 @@ const getClass = (s) => {
 
 .modal-card {
     background: white;
-    padding: 30px;
-    border-radius: 20px;
-    width: 320px;
+    padding: 32px;
+    border-radius: 24px;
+    width: 360px;
     text-align: center;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-xl);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-card h4 {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 15px;
+    font-size: 22px;
+    font-weight: 700;
 }
 
 .modal-desc {
-    color: #666;
+    color: var(--text-light);
     margin-bottom: 20px;
+    font-size: 14px;
 }
 
 .time-options {
@@ -420,10 +478,11 @@ const getClass = (s) => {
 }
 
 .time-options button.active {
-    background: #E3F2FD;
-    color: #3498DB;
-    border-color: #3498DB;
-    font-weight: bold;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
 }
 
 .modal-actions {
@@ -446,8 +505,15 @@ const getClass = (s) => {
 }
 
 .confirm-btn {
-    background: #2C3E50;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+}
+
+.confirm-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
 }
 
 /* 반응형 (모바일 대응) */
